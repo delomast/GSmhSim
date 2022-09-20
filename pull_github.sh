@@ -1,2 +1,2 @@
 #!/bin/bash
-git pull https://github.com/delomast/OysterSimGS_2021.git
+git pull https://github.com/delomast/GSmhSim.git
