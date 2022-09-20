@@ -240,6 +240,9 @@ vcf_readLoci <- function(vcfPath, lineNumbers, numLines = 20000){
 }
 
 
+#' Run blupf90 within the script and return solution
+#' requires the input file to be previously written
+#' 
 #' @param g a matrix of genotypes (0,1,2) with rownames as indiviudals and colnames as loci
 #' @param founderAlleleFreqs a named vector of allele freqs in the base generation with names as loci
 #' @param localTempDir local temp dir input to script

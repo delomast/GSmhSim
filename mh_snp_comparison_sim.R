@@ -125,9 +125,12 @@ print(Sys.time())
 print("begin loading genotypes")
 
 # evaluate VCF: num SNPs, HE of snps and microhaps
-system2("py", args = c("./eval_vcf.py", inputVCFpath, localTempDir, windSize, randSeed, num_choose_qtl))
-snpEval <- read_tsv("HeSNP.txt", col_names = c("chr", "pos", "lineNum", "He", "qtl"), col_types = "cdddl")
-mhEval <- read_tsv("HeMH.txt", col_names = c("chr", "pos", "He", "lineNum"), col_types = "ccdc")
+system2("python3", args = c("./eval_vcf.py", inputVCFpath, paste0(localTempDir, "/", "temp", iterationNumber, "/"),
+							windSize, randSeed, num_choose_qtl))
+snpEval <- read_tsv(paste0(localTempDir, "/", "temp", iterationNumber, "/HeSNP.txt"),
+					col_names = c("chr", "pos", "lineNum", "He", "qtl"), col_types = "cdddl")
+mhEval <- read_tsv(paste0(localTempDir, "/", "temp", iterationNumber, "/HeMH.txt"),
+				   col_names = c("chr", "pos", "He", "lineNum"), col_types = "ccdc")
 
 # QTL
 qtl <- snpEval %>% filter(qtl) 

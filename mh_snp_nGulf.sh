@@ -29,7 +29,7 @@ mkdir /90daydata/oyster_gs_sim/temp"$SLURM_ARRAY_TASK_ID"
 # run simulation
 
 # randomSeed iterationNumber TemporaryLocalStorageDirectory vcfInputPath
-Rscript mh_snp_comparison.R $x $SLURM_ARRAY_TASK_ID /90daydata/oyster_gs_sim/ ../seq_data/ngulf.vcf
+Rscript mh_snp_comparison_sim.R $x $SLURM_ARRAY_TASK_ID /90daydata/oyster_gs_sim/ ../seq_data/ngulf.vcf
 
 # remove temp directory
 rm -r /90daydata/oyster_gs_sim/temp"$SLURM_ARRAY_TASK_ID"
