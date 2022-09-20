@@ -2,26 +2,26 @@
 # 
 # 
 
-# Rlibrarylocation <- "/project/oyster_gs_sim/R_packages/4.1/"
-# cmdArgs <- commandArgs(trailingOnly=TRUE)
+Rlibrarylocation <- "/project/oyster_gs_sim/R_packages/4.1/"
+cmdArgs <- commandArgs(trailingOnly=TRUE)
 
 #' # Script parameters given on the command line
 #' #' @param randSeed random seed to set R's random number generator
 #' #' @param iterationNumber used to set unique file output names
 #' #' @param localTempDir directory to write temp files to
 #' #' @param inputVCFpath path to VCF with data to seed simulation (define founder population)
-#' randSeed <- cmdArgs[1]
-#' iterationNumber <- cmdArgs[2]
-#' localTempDir <- cmdArgs[3]
-#' inputVCFpath <- cmdArgs[4]
+randSeed <- cmdArgs[1]
+iterationNumber <- cmdArgs[2]
+localTempDir <- cmdArgs[3]
+inputVCFpath <- cmdArgs[4]
 
 
 # parameters for interactive testing
-Rlibrarylocation <- NULL
-randSeed <- 7
-iterationNumber <- 1
-localTempDir <- "./"
-inputVCFpath <- "./ngulf.vcf"
+# Rlibrarylocation <- NULL
+# randSeed <- 7
+# iterationNumber <- 1
+# localTempDir <- "./"
+# inputVCFpath <- "./ngulf.vcf"
 
 library(AlphaSimR, lib.loc=Rlibrarylocation)
 library(tidyverse, lib.loc=Rlibrarylocation)
