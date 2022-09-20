@@ -417,7 +417,7 @@ for(gen in 1:nGenerations){
 			# NOTE: only using _current_ generation to calculate accuracy of gebvs
 			comp <- data.frame(id = pop[[gen + 1]]@id, gv = gv(pop[[gen + 1]])) %>% 
 				left_join(data.frame(id = as.character(sol$levelNew), gebv = sol$V4), by = "id") %>%
-				left_join(p, by = "id")
+				left_join(trainPhenos %>% select(id, Trait_1) %>% rename(pheno = Trait_1), by = "id")
 			
 			# calc accuracy of prediction and save
 			gebvRes <- gebvRes %>% 
