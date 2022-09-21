@@ -450,7 +450,7 @@ for(gen in 1:nGenerations){
 		Amat <- createG(g = g[ocsData$Indiv,],
 						af = founderAlleleFreqs[colnames(g)]) # G with first method of VanRaden (2008)
 		matingPlan <- runOCS(ocsData = ocsData, Gmat = Amat[ocsData$Indiv,ocsData$Indiv], 
-							 N = nFound / 2, Ne = 50)
+							 N = nBrood / 2, Ne = 50)
 		rm(Amat) # save memory
 		print(Sys.time())
 		print("end ocs")
