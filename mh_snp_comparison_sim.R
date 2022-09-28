@@ -461,7 +461,7 @@ for(gen in 1:nGenerations){
 	}
 }
 # initial testing, save everything
-save.image(paste0("multGen_", iterationNumber, ".rda"))
+# save.image(paste0("multGen_", iterationNumber, ".rda"))
 if(!dir.exists("rda")) dir.create("rda")
 # for low memory use, only save needed outputs
 save(imputeRes, gebvRes, file = paste0("rda/multGen_empir_MH_small_", prefix, "_", iterationNumber, ".rda"))
