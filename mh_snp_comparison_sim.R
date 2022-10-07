@@ -111,6 +111,31 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	HDpanelSize <- 14000
 	num_choose_qtl <- 1000
 	prefix <- "CAN"
+} else if (grepl("allPhased_oysterChina.vcf$", inputVCFpath)) {
+	num <- data.frame(chr = c("NC_047559.1",
+							  "NC_047560.1",
+							  "NC_047561.1",
+							  "NC_047562.1",
+							  "NC_047563.1",
+							  "NC_047564.1",
+							  "NC_047565.1",
+							  "NC_047566.1",
+							  "NC_047567.1",
+							  "NC_047568.1"),
+					  len = c(55785328,
+					  		73222313,
+					  		58319100,
+					  		53127865,
+					  		73550375,
+					  		60151564,
+					  		62107823,
+					  		58462999,
+					  		37089910,
+					  		57541580)
+	)
+	HDpanelSize <- 40000
+	num_choose_qtl <- 1000
+	prefix <- "CHI"
 } else {
 	stop("not set up for input VCF")
 }
