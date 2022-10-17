@@ -1,5 +1,5 @@
 #!/bin/bash
-# run simulations with scrm for
+# run simulations for
 # performance of different SNP panel sizes
 # written for execution on Ceres
 #SBATCH --cpus-per-task=1  # ask for 1 cpu
