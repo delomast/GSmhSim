@@ -345,8 +345,12 @@ pop[[1]] <- newPop(founderPop)
 founderAlleleFreqs <- apply(pullSnpGeno(pop[[1]]), 2, function(x) sum(x) / (2 * length(x)))
 
 # write out parameter file for renumf90
+# note that blupf90 needs to be run from the temporary directory as 
+# the paths in the parameter file are relative
+# using full paths can be too many characters for blupf90 to handle
+# and you get an error from having incorrect file paths (b/c they are truncated)
 cat("DATAFILE
-", paste0(localTempDir, "/", "temp", iterationNumber, "/"), "f90dat.txt
+f90dat.txt
 TRAITS
 3
 FIELDS_PASSED TO OUTPUT
@@ -362,7 +366,7 @@ EFFECT           # first random effect (animal)
 RANDOM           ## additive effect without pedigree
 animal
 SNP_FILE         ## SNP marker file
-", paste0(localTempDir, "/", "temp", iterationNumber, "/"), "f90snp.txt
+f90snp.txt
 (CO)VARIANCES    ## its variance component
 1.0
 OPTION use_yams
@@ -370,7 +374,7 @@ OPTION AlphaBeta 0.99 0.01
 OPTION tunedG 0
 OPTION whichG 1 # vanRaden 2008
 OPTION whichfreq 0 # use freqs from file
-OPTION FreqFile ", paste0(localTempDir, "/", "temp", iterationNumber, "/"), "baseFreqs.txt # file with frequencies (in same order as genotypes)
+OPTION FreqFile baseFreqs.txt # file with frequencies (in same order as genotypes)
 OPTION whichfreqScale 0 # use freqs from file
 OPTION minfreq 0.0 # turning off all filters and checks
 OPTION monomorphic 0
