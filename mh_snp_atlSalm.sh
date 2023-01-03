@@ -25,14 +25,14 @@ x=$(cat randSeeds.txt | sed -n ${SLURM_ARRAY_TASK_ID}p)
 echo "My random seed is: " $x
 
 # make temp directory
-mkdir "$TMPDIR"/temp"$SLURM_ARRAY_TASK_ID"
+mkdir /90daydata/oyster_gs_sim/temp"$SLURM_ARRAY_TASK_ID"
 
 # run simulation
 
 # randomSeed iterationNumber TemporaryLocalStorageDirectory vcfInputPath
-Rscript mh_snp_comparison_sim.R $x $SLURM_ARRAY_TASK_ID $TMPDIR ../seq_data_mh/allPhased_atlSalm.vcf
+Rscript mh_snp_comparison_sim.R $x $SLURM_ARRAY_TASK_ID /90daydata/oyster_gs_sim/ ../seq_data_mh/allPhased_atlSalm.vcf
 
 # remove temp directory
-rm -r "$TMPDIR"/temp"$SLURM_ARRAY_TASK_ID"
+rm -r /90daydata/oyster_gs_sim/temp"$SLURM_ARRAY_TASK_ID"
 
 echo "Done with simulation"
