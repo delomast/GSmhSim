@@ -30,10 +30,8 @@ library(AllocateMate, lib.loc=Rlibrarylocation)
 
 source("utils.R")
 
-# LD panel sizes to test
-panelSizes <- seq(50, 400, 50)
+# window for defining microhaplotypes
 windSize <- 125
-
 
 # define chr sizes and numbers of loci
 if(grepl("mbp_simInput.vcf$", inputVCFpath)){
@@ -61,6 +59,8 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	HDpanelSize <- 40000
 	num_choose_qtl <- 1000
 	prefix <- "MBP"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 400, 100)
 } else if(grepl("ngulf.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("NC_035789.1",
 							  "NC_035780.1",
@@ -86,31 +86,8 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	HDpanelSize <- 3000
 	num_choose_qtl <- 100
 	prefix <- "Ngulf"
-} else if(grepl("canadaAllPhased.vcf$", inputVCFpath)) {
-	num <- data.frame(chr = c("CM008241.1",
-							  "CM008242.1",
-							  "CM008243.1",
-							  "CM008244.1",
-							  "CM008245.1",
-							  "CM008246.1",
-							  "CM008247.1",
-							  "CM008248.1",
-							  "CM008249.1",
-							  "CM008250.1"),
-					  len = c(65668440,
-					  		61752955,
-					  		77061148,
-					  		59691872,
-					  		98698416,
-					  		51258098,
-					  		57830854,
-					  		75944018,
-					  		104168038,
-					  		32650045)
-	)
-	HDpanelSize <- 14000
-	num_choose_qtl <- 1000
-	prefix <- "CAN"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 400, 100)
 } else if (grepl("allPhased_oysterChina.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("NC_047559.1",
 							  "NC_047560.1",
@@ -136,6 +113,8 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	HDpanelSize <- 40000
 	num_choose_qtl <- 1000
 	prefix <- "CHI"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 400, 100)
 } else if (grepl("allPhased_atlSalm.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("CM037938.1",
 							  "CM037939.1",
@@ -195,6 +174,16 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	HDpanelSize <- 40000
 	num_choose_qtl <- 1000
 	prefix <- "ATL"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 800, 100)
+	# expand pop
+	print("expanding pop")
+	expandPop(inputVCFpath, numInds = 200, numGens = 10,
+			  num = num, 
+			  vcfOut = paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt"),
+			  numFinal = 200)
+	# redirect to expanded VCF
+	inputVCFpath <- paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt")
 } else {
 	stop("not set up for input VCF")
 }
@@ -527,6 +516,19 @@ for(gen in 1:nGenerations){
 								 localTempDir = localTempDir, iterationNumber = iterationNumber, 
 								 trainPhenos = trainPhenos, SP_pedigree = SP$pedigree, 
 								 curGenIDs = pop[[gen + 1]]@id)
+		# saving accuracy to serve as "control"
+		# NOTE: only using _current_ generation to calculate accuracy of gebvs
+		comp <- data.frame(id = pop[[gen + 1]]@id, gv = gv(pop[[gen + 1]])) %>% 
+			left_join(data.frame(id = as.character(sol$levelNew), gebv = sol$V4), by = "id") %>%
+			left_join(trainPhenos %>% select(id, Trait_1) %>% rename(pheno = Trait_1), by = "id")
+		
+		# calc accuracy of prediction and save
+		gebvRes <- gebvRes %>% 
+			rbind(data.frame(genNum = gen,
+							 panelNum = length(panelSizes) + 1,
+							 locusType = "HD",
+							 numLoci = nrom(HDpanel),
+							 acc = cor(comp$gv[is.na(comp$pheno)], comp$gebv[is.na(comp$pheno)])))
 		print(Sys.time())
 		print("begin ocs")
 		# OCS with lagrangian

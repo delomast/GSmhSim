@@ -1,5 +1,6 @@
 # utility functions used in other script(s)
 
+library(AlphaSimR)
 library(dplyr)
 library(stringr)
 library(optiSel)
@@ -171,12 +172,18 @@ greedyChooseLoci <- function(num, locusEval){
 #' read in haplotypes from a vcf file using the line number outputs (first SNP is line number 1)
 #' @param vcfPath path to vcf file
 #' @param lineNumbers line numbers of the loci in the vcf file to keep. 
-#'   First locus in the file is line 1.
+#'   First locus in the file is line 1. If NULL, all loci are kept.
 #' @param numLines number of lines of VCF to read at one time
 #' @return a list of a matrix (haplotypes, rows as haplotypes, cols as loci, adjacent 
 #'   rows are individuals) and 
 #'   data.frame of chr and pos (same order as cols of matrix)
-vcf_readLoci <- function(vcfPath, lineNumbers, numLines = 20000){
+vcf_readLoci <- function(vcfPath, lineNumbers = NULL, numLines = 20000){
+	if(is.null(lineNumbers)){
+		useAll <- TRUE
+		# note this variable is required b/c when lineNumbers is all used up, it becomes NULL
+	} else {
+		useAll <- FALSE
+	}
 	# read in VCF and calculate maf for each locus
 	f <- file(vcfPath, "r") # open vcf
 	on.exit(close(f))
@@ -202,12 +209,15 @@ vcf_readLoci <- function(vcfPath, lineNumbers, numLines = 20000){
 	genos <- c(genos, readLines(f, n = numLines - length(line)))
 	while(length(genos) > 0){
 		laNext <- length(genos)
-		lineBool <- (lineAdjust + (1:laNext)) %in% lineNumbers
-		if(sum(lineBool) > 0){
-			# only process lines you need
-			genos <- genos[lineBool]
-			# shorten list of lines to look for
-			lineNumbers <- lineNumbers[!lineNumbers %in% (lineAdjust + (1:laNext)[lineBool])]
+		if(!useAll) lineBool <- (lineAdjust + (1:laNext)) %in% lineNumbers
+		if(useAll || sum(lineBool) > 0){
+			if(!useAll){
+				# only process lines you need
+				genos <- genos[lineBool]
+				# shorten list of lines to look for
+				lineNumbers <- lineNumbers[!lineNumbers %in% (lineAdjust + (1:laNext)[lineBool])]
+			}
+
 			
 			# splits columns by tabs and genotypes by "|"
 			# so starting with col 10, each col is a haplotype and each pair
@@ -230,8 +240,9 @@ vcf_readLoci <- function(vcfPath, lineNumbers, numLines = 20000){
 			# save chr, pos, genos
 			saveGenos <- rbind(saveGenos, genos)
 			saveMap <- rbind(saveMap, data.frame(chr = chrPos[,1],
-																					 pos = as.numeric(chrPos[,2])))
+												 pos = as.numeric(chrPos[,2])))
 		}
+		if(!useAll && length(lineNumbers) == 0) break # all requested loci have been found
 		lineAdjust <- lineAdjust + laNext
 		genos <- readLines(f, n = numLines)
 	}
@@ -370,4 +381,106 @@ runOCS <- function(ocsData, Gmat, N, Ne = 50){
 															parents = ocsMatings, max_F = 1, method = "min_F")
 	
 	return(crosses$optimal_families)
+}
+
+#' expand a population to create a larger number of individuals
+#' by randomly mating individuals for a given number of generations
+#' @param vcfPath phased and imputed vcf file to use as "seed" population
+#' @param numInds number of individuals per generation
+#' @param numGens number of generations to run through
+#' @param num data.frame with chromosome name in the "chr" column and
+#'   number of loci to choose in the "num" column (uses column names not positions) and
+#'   chr length in the len column
+#' @param vcfOut path to write "psuedo-vcf" output
+#' @param numFinal number of individuals to (randomly) output
+#' @return nothing, writes something formatted like a vcf but missing some data
+expandPop <- function(vcfPath, numInds, numGens, num, vcfOut, numFinal){
+	if(numGens < 1) stop("numGens must be >= 1")
+	if(numInds < 1) stop("numInds must be >= 1")
+
+	# read in vcf, todos genotipos
+	inputGenos <- vcf_readLoci(vcfPath = vcfPath, lineNumbers = NULL, 
+							   numLines = 20000)
+	# input to alphasimR
+	haplo_list <- list()
+	genMap <- list()
+	toAdd <- c() # record to later undue position conversion in AlphaSimR
+	for(i in 1:nrow(num)){
+		# create haplotype and map inputs
+		tempBool <- inputGenos[[2]]$chr == num$chr[i]
+		haplo_list[[i]] <- inputGenos[[1]][,tempBool]
+		genMap[[i]] <- inputGenos[[2]]$pos[tempBool]
+		toAdd <- c(toAdd, min(genMap[[i]]))
+		genMap[[i]] <- genMap[[i]] / num$len[i] # normalize to 1M
+	}
+	
+	founderPop <- newMapPop(genMap=genMap, haplotypes=haplo_list)
+	SP_temp <- SimParam$new(founderPop)
+	SP_temp$setTrackPed(isTrackPed = FALSE) # have AlphaSimR maintain pedigree records
+	SP_temp$setSexes("yes_sys") # at the time of breeding, all individuals will only be one sex
+	pop <- newPop(founderPop, simParam = SP_temp)
+	
+	# loop through the desired number of generations
+	for(i in 1:numGens){
+		pop <- randCross(pop = pop, nCrosses = numInds, nProgeny = 1,
+						 balance = TRUE, simParam = SP_temp)
+	}
+	
+	# now get haplotypes and write vcf
+	haps <- as.data.frame(t(pullSegSiteHaplo(pop = pop, simParam = SP_temp))) # rows are loci
+	# randomly select inds for output
+	indsToKeep <- sample(seq(1, ncol(haps) - 1, 2), n = numFinal, replace = FALSE)
+	haps <- haps[,sort(c(indsToKeep, indsToKeep + 1))]
+	map <- getGenMap(object = SP_temp)
+	
+	# copy header from input vcf
+	f <- file(vcfPath, "r") # open vcf
+	on.exit(close(f))
+	# get header
+	header <- c()
+	linesIn <- readLines(f, n = 100)
+	while(length(linesIn) > 0){
+		endHeader <- which(grepl("^#CHROM", linesIn))
+		if(length(endHeader) > 0){
+			header <- c(header, linesIn[1:endHeader])
+			break
+		}
+		header <- c(header, linesIn)
+		linesIn <- readLines(f, n = 100)
+	}
+
+	# paste haplotypes together
+	for(i in seq(1, ncol(haps) - 1, 2)){
+		haps[,i] <- paste0(haps[,i], "|", haps[,i+1])
+	}
+	haps <- haps[,seq(1, ncol(haps) - 1, 2)]
+	# edit last row of header for sample names/number
+	colnames(haps) <- paste0("Ind_", gsub("_1$", "", colnames(haps)))
+	lastHeaderRow <- header[length(header)]
+	lastHeaderRow <- strsplit(lastHeaderRow, "\t")[[1]][1:9]
+	lastHeaderRow <- c(lastHeaderRow, colnames(haps))
+	header[length(header)] <- paste(lastHeaderRow, collapse = "\t")
+	
+	# fill in vcf columns with (some missing) data
+	locusData <- map[match(rownames(haps), map$id), c("chr", "pos")]
+	locusData$id <- "."
+	locusData$ref <- "."
+	locusData$alt <- "."
+	locusData$qual <- "."
+	locusData$filter <- "."
+	locusData$info <- "."
+	locusData$format <- "GT"
+	
+	# convert chr names back to original
+	locusData$chr <- num$chr[as.numeric(locusData$chr)]
+	# convert from M to bp
+	locusData$pos <- round((locusData$pos * num$len[match(locusData$chr, num$chr)]) +
+		toAdd[match(locusData$chr, num$chr)])
+	# combine and output
+	haps <- cbind(locusData, haps)
+	writeLines(header, vcfOut)
+	write.table(haps, vcfOut, append = TRUE, 
+				col.names = FALSE, row.names = FALSE,
+				quote = FALSE, sep = "\t")
+	
 }
