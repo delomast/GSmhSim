@@ -397,6 +397,7 @@ runOCS <- function(ocsData, Gmat, N, Ne = 50){
 expandPop <- function(vcfPath, numInds, numGens, num, vcfOut, numFinal){
 	if(numGens < 1) stop("numGens must be >= 1")
 	if(numInds < 1) stop("numInds must be >= 1")
+	if(numInds < numFinal) stop("numInds must be >= numFinal")
 
 	# read in vcf, todos genotipos
 	inputGenos <- vcf_readLoci(vcfPath = vcfPath, lineNumbers = NULL, 
@@ -429,7 +430,7 @@ expandPop <- function(vcfPath, numInds, numGens, num, vcfOut, numFinal){
 	# now get haplotypes and write vcf
 	haps <- as.data.frame(t(pullSegSiteHaplo(pop = pop, simParam = SP_temp))) # rows are loci
 	# randomly select inds for output
-	indsToKeep <- sample(seq(1, ncol(haps) - 1, 2), n = numFinal, replace = FALSE)
+	indsToKeep <- sample(seq(1, ncol(haps) - 1, 2), size = numFinal, replace = FALSE)
 	haps <- haps[,sort(c(indsToKeep, indsToKeep + 1))]
 	map <- getGenMap(object = SP_temp)
 	
