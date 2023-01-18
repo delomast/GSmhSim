@@ -475,8 +475,9 @@ expandPop <- function(vcfPath, numInds, numGens, num, vcfOut, numFinal){
 	# convert chr names back to original
 	locusData$chr <- num$chr[as.numeric(locusData$chr)]
 	# convert from M to bp
-	locusData$pos <- round((locusData$pos * num$len[match(locusData$chr, num$chr)]) +
-		toAdd[match(locusData$chr, num$chr)])
+	# format() to prevent write.table using scientific notation (causes downstream problems)
+	locusData$pos <- format(round((locusData$pos * num$len[match(locusData$chr, num$chr)]) +
+		toAdd[match(locusData$chr, num$chr)]), scientific = FALSE)
 	# combine and output
 	haps <- cbind(locusData, haps)
 	writeLines(header, vcfOut)
