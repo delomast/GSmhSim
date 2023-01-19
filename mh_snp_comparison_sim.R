@@ -492,7 +492,7 @@ for(gen in 1:nGenerations){
 									 trainPhenos = trainPhenos, SP_pedigree = SP$pedigree, 
 									 curGenIDs = pop[[gen + 1]]@id)
 			# NOTE: only using _current_ generation to calculate accuracy of gebvs
-			comp <- data.frame(id = pop[[gen + 1]]@id, gv = gv(pop[[gen + 1]])) %>% 
+			comp <- data.frame(id = pop[[gen + 1]]@id, gv = as.vector(gv(pop[[gen + 1]]))) %>% 
 				left_join(data.frame(id = as.character(sol$levelNew), gebv = sol$V4), by = "id") %>%
 				left_join(trainPhenos %>% select(id, Trait_1) %>% rename(pheno = Trait_1), by = "id")
 			
