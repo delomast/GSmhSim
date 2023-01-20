@@ -527,7 +527,7 @@ for(gen in 1:nGenerations){
 			rbind(data.frame(genNum = gen,
 							 panelNum = length(panelSizes) + 1,
 							 locusType = "HD",
-							 numLoci = nrom(HDpanel),
+							 numLoci = nrow(HDpanel),
 							 acc = cor(comp$gv[is.na(comp$pheno)], comp$gebv[is.na(comp$pheno)])))
 		print(Sys.time())
 		print("begin ocs")
