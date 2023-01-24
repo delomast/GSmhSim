@@ -506,29 +506,30 @@ for(gen in 1:nGenerations){
 		}
 	}
 	
+	print(Sys.time())
+	print("calculating GEBVs wtih full panel")
+	g <- all_pullSnpGenos(pop, loci = HDpanel$name)
+	sol <- calcGEBVs_blupf90(g = g, 
+							 founderAlleleFreqs = founderAlleleFreqs, 
+							 localTempDir = localTempDir, iterationNumber = iterationNumber, 
+							 trainPhenos = trainPhenos, SP_pedigree = SP$pedigree, 
+							 curGenIDs = pop[[gen + 1]]@id)
+	# saving accuracy to serve as "control"
+	# NOTE: only using _current_ generation to calculate accuracy of gebvs
+	comp <- data.frame(id = pop[[gen + 1]]@id, gv = as.vector(gv(pop[[gen + 1]]))) %>% 
+		left_join(data.frame(id = as.character(sol$levelNew), gebv = sol$V4), by = "id") %>%
+		left_join(trainPhenos %>% select(id, Trait_1) %>% rename(pheno = Trait_1), by = "id")
+	
+	# calc accuracy of prediction and save
+	gebvRes <- gebvRes %>% 
+		rbind(data.frame(genNum = gen,
+						 panelNum = length(panelSizes) + 1,
+						 locusType = "HD",
+						 numLoci = nrow(HDpanel),
+						 acc = cor(comp$gv[is.na(comp$pheno)], comp$gebv[is.na(comp$pheno)])))
+		
 	# make next generation based on GEBVs calculated with full HD panel for all individuals
 	if(gen < nGenerations){
-		print(Sys.time())
-		print("calculating GEBVs for ocs")
-		g <- all_pullSnpGenos(pop, loci = HDpanel$name)
-		sol <- calcGEBVs_blupf90(g = g, 
-								 founderAlleleFreqs = founderAlleleFreqs, 
-								 localTempDir = localTempDir, iterationNumber = iterationNumber, 
-								 trainPhenos = trainPhenos, SP_pedigree = SP$pedigree, 
-								 curGenIDs = pop[[gen + 1]]@id)
-		# saving accuracy to serve as "control"
-		# NOTE: only using _current_ generation to calculate accuracy of gebvs
-		comp <- data.frame(id = pop[[gen + 1]]@id, gv = as.vector(gv(pop[[gen + 1]]))) %>% 
-			left_join(data.frame(id = as.character(sol$levelNew), gebv = sol$V4), by = "id") %>%
-			left_join(trainPhenos %>% select(id, Trait_1) %>% rename(pheno = Trait_1), by = "id")
-		
-		# calc accuracy of prediction and save
-		gebvRes <- gebvRes %>% 
-			rbind(data.frame(genNum = gen,
-							 panelNum = length(panelSizes) + 1,
-							 locusType = "HD",
-							 numLoci = nrow(HDpanel),
-							 acc = cor(comp$gv[is.na(comp$pheno)], comp$gebv[is.na(comp$pheno)])))
 		print(Sys.time())
 		print("begin ocs")
 		# OCS with lagrangian
