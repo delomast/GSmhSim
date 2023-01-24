@@ -30,6 +30,9 @@ library(AllocateMate, lib.loc=Rlibrarylocation)
 
 source("utils.R")
 
+# set random seed
+set.seed(as.numeric(randSeed))
+
 # window for defining microhaplotypes
 windSize <- 125
 
