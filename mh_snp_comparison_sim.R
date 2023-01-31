@@ -181,7 +181,7 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 	panelSizes <- seq(50, 800, 100)
 	# expand pop
 	print("expanding pop")
-	expandPop(inputVCFpath, numInds = 200, numGens = 10,
+	expandPop(inputVCFpath, numInds = 200, numGens = 5,
 			  num = num, 
 			  vcfOut = paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt"),
 			  numFinal = 200)
