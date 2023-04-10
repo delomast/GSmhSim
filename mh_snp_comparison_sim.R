@@ -179,14 +179,16 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	prefix <- "ATL"
 	# LD panel sizes to test
 	panelSizes <- seq(50, 800, 100)
+	# this expansion pop was used for testing
+	# kept code in in case of revisiting
 	# expand pop
-	print("expanding pop")
-	expandPop(inputVCFpath, numInds = 200, numGens = 5,
-			  num = num, 
-			  vcfOut = paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt"),
-			  numFinal = 200)
-	# redirect to expanded VCF
-	inputVCFpath <- paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt")
+	# print("expanding pop")
+	# expandPop(inputVCFpath, numInds = 200, numGens = 5,
+	# 		  num = num, 
+	# 		  vcfOut = paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt"),
+	# 		  numFinal = 200)
+	# # redirect to expanded VCF
+	# inputVCFpath <- paste0(localTempDir, "/", "temp", iterationNumber, "/founderVCF.txt")
 } else {
 	stop("not set up for input VCF")
 }
