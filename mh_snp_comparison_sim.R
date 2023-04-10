@@ -37,7 +37,7 @@ set.seed(as.numeric(randSeed))
 windSize <- 125
 
 # define chr sizes and numbers of loci
-if(grepl("mbp_simInput.vcf$", inputVCFpath)){
+if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	num <- data.frame(chr = c("NC_047559.1",
 							  "NC_047560.1",
 							  "NC_047561.1",
@@ -59,9 +59,9 @@ if(grepl("mbp_simInput.vcf$", inputVCFpath)){
 					  		37089910,
 					  		57541580)
 	)
-	HDpanelSize <- 40000
+	HDpanelSize <- 35000
 	num_choose_qtl <- 1000
-	prefix <- "MBP"
+	prefix <- "MBPld"
 	# LD panel sizes to test
 	panelSizes <- seq(50, 400, 100)
 } else if(grepl("ngulf.vcf$", inputVCFpath)) {
