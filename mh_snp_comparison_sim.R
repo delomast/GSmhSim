@@ -63,7 +63,40 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	num_choose_qtl <- 1000
 	prefix <- "MBPld"
 	# LD panel sizes to test
-	panelSizes <- seq(50, 400, 100)
+	panelSizes <- seq(50, 450, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 100
+} else if(grepl("mbp.vcf$", inputVCFpath)){
+	num <- data.frame(chr = c("NC_047559.1",
+							  "NC_047560.1",
+							  "NC_047561.1",
+							  "NC_047562.1",
+							  "NC_047563.1",
+							  "NC_047564.1",
+							  "NC_047565.1",
+							  "NC_047566.1",
+							  "NC_047567.1",
+							  "NC_047568.1"),
+					  len = c(55785328,
+					  		73222313,
+					  		58319100,
+					  		53127865,
+					  		73550375,
+					  		60151564,
+					  		62107823,
+					  		58462999,
+					  		37089910,
+					  		57541580)
+	)
+	HDpanelSize <- 25000
+	num_choose_qtl <- 1000
+	prefix <- "MBPrad"
+	# LD panel sizes to test
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 200 
+	panelSizes <- seq(50, 450, 100)
 } else if(grepl("ngulf.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("NC_035789.1",
 							  "NC_035780.1",
@@ -90,7 +123,10 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	num_choose_qtl <- 100
 	prefix <- "Ngulf"
 	# LD panel sizes to test
-	panelSizes <- seq(50, 400, 100)
+	panelSizes <- seq(50, 450, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 200 
 } else if (grepl("allPhased_oysterChina.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("NC_047559.1",
 							  "NC_047560.1",
@@ -117,7 +153,10 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	num_choose_qtl <- 1000
 	prefix <- "CHI"
 	# LD panel sizes to test
-	panelSizes <- seq(50, 400, 100)
+	panelSizes <- seq(50, 450, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 100 
 } else if (grepl("allPhased_atlSalm.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("CM037938.1",
 							  "CM037939.1",
@@ -178,7 +217,10 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	num_choose_qtl <- 1000
 	prefix <- "ATL"
 	# LD panel sizes to test
-	panelSizes <- seq(50, 800, 100)
+	panelSizes <- seq(50, 750, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 100 
 	# this expansion pop was used for testing
 	# kept code in in case of revisiting
 	# expand pop
@@ -193,9 +235,6 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	stop("not set up for input VCF")
 }
 
-# this will be the number of broodstock used AFTER the founder generation
-# the founders are just those input with the vcf
-nBrood <- 200 
 nOffspringPerCross <- 50
 nGenerations <- 3
 
