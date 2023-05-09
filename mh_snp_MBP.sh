@@ -6,7 +6,7 @@
 #SBATCH --mem=60G # Maximum amount of memory this job will be given
 #SBATCH --time=119:00:00 # ask that the job be allowed to run for 
 #SBATCH --array=1-200%75 #specify how many jobs in the array and limit number running concurrently (e.g. 1-96%40)
-#SBATCH --output=arrayMBPld_%a.out # tell it where to store the output console text
+#SBATCH --output=arrayMBP_%a.out # tell it where to store the output console text
 #SBATCH -p medium # partition to request
 
 echo "My SLURM_JOB_ID: " $SLURM_JOB_ID
