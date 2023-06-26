@@ -2,7 +2,8 @@
 # 
 # 
 
-Rlibrarylocation <- "/project/oyster_gs_sim/R_packages/4.1/"
+.libPaths(c("/project/oyster_gs_sim/R_packages/4.3/", .libPaths()))
+Rlibrarylocation <- "/project/oyster_gs_sim/R_packages/4.3/"
 cmdArgs <- commandArgs(trailingOnly=TRUE)
 
 #' # Script parameters given on the command line

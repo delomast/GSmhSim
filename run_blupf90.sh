@@ -7,6 +7,7 @@
 # 1 is working directory
 
 # load programs (ceres)
+module use /software/7/modulefiles # newer doesn't have airemlf90?
 module load blupf90
 
 # move to temp directory
