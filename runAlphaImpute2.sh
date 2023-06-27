@@ -5,7 +5,7 @@
 # 3 pedigree input
 # 4 random seed
 # 5 max thread for imputation
-module load python_3
+module load miniconda
 source activate /project/oyster_gs_sim/ai2_2/
 
 AlphaImpute2 -out $1 -genotypes $2 -pedigree $3 -seed $4 -maxthreads $5 # -ped_only
