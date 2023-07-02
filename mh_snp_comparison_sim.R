@@ -128,6 +128,66 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 	# this will be the number of broodstock used AFTER the founder generation
 	# the founders are just those input with the vcf
 	nBrood <- 200 
+} else if(grepl("allPhased_eobc.vcf$", inputVCFpath)) {
+	num <- data.frame(chr = c("NC_035789.1",
+							  "NC_035780.1",
+							  "NC_035781.1",
+							  "NC_035782.1",
+							  "NC_035783.1",
+							  "NC_035784.1",
+							  "NC_035785.1",
+							  "NC_035786.1",
+							  "NC_035787.1",
+							  "NC_035788.1"),
+					  len = c(32650045, 
+					  		65668440,
+					  		61752955, 
+					  		77061148, 
+					  		59691872, 
+					  		98698416, 
+					  		51258098, 
+					  		57830854, 
+					  		75944018, 
+					  		104168038)
+	)
+	HDpanelSize <- 40000
+	num_choose_qtl <- 1000
+	prefix <- "EOBC_all"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 450, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 200 
+} else if(grepl("allPhased_eobc_subset.vcf$", inputVCFpath)) {
+	num <- data.frame(chr = c("NC_035789.1",
+							  "NC_035780.1",
+							  "NC_035781.1",
+							  "NC_035782.1",
+							  "NC_035783.1",
+							  "NC_035784.1",
+							  "NC_035785.1",
+							  "NC_035786.1",
+							  "NC_035787.1",
+							  "NC_035788.1"),
+					  len = c(32650045, 
+					  		65668440,
+					  		61752955, 
+					  		77061148, 
+					  		59691872, 
+					  		98698416, 
+					  		51258098, 
+					  		57830854, 
+					  		75944018, 
+					  		104168038)
+	)
+	HDpanelSize <- 40000
+	num_choose_qtl <- 1000
+	prefix <- "EOBC_subset"
+	# LD panel sizes to test
+	panelSizes <- seq(50, 450, 100)
+	# this will be the number of broodstock used AFTER the founder generation
+	# the founders are just those input with the vcf
+	nBrood <- 200 
 } else if (grepl("allPhased_oysterChina.vcf$", inputVCFpath)) {
 	num <- data.frame(chr = c("NC_047559.1",
 							  "NC_047560.1",
