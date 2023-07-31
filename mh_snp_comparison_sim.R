@@ -454,7 +454,7 @@ for(ldType in names(LDpanels)){
 			tempHapMat <- hapMat[,tempName,drop = FALSE]
 			# concat to form microhap alleles
 			a <- tempHapMat[,1]
-			if(ncol(tempHapMat) > 1) for(i in 2:ncol(tempHapMat)) a <- paste0(a, tempHapMat[,i])
+			if(ncol(tempHapMat) > 1) for(k in 2:ncol(tempHapMat)) a <- paste0(a, tempHapMat[,k])
 			tempStats$aRich[j] <- n_distinct(a)
 			tempStats$nSNP[j] <- length(tempName)
 			tempStats$He <- 1 - sum((table(a) / length(a))^2)
