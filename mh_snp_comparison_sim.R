@@ -450,7 +450,7 @@ for(ldType in names(LDpanels)){
 			# position of SNPs in locus
 			tempPos <- as.numeric(str_split(pointLD$pos[j], ",")[[1]])
 			# names of SNPs in alphaSimR
-			tempName <- LDselect$mh[[1]] %>% filter(pos %in% tempPos) %>% pull(name)
+			tempName <- LDselect[[ldType]][[i]] %>% filter(pos %in% tempPos) %>% pull(name)
 			tempHapMat <- hapMat[,tempName,drop = FALSE]
 			# concat to form microhap alleles
 			a <- tempHapMat[,1]
@@ -466,8 +466,7 @@ for(ldType in names(LDpanels)){
 				panel = i,
 				nLoci = nrow(pointLD),
 				aRich_mu = mean(tempStats$aRich),
-				aRich_min = min(tempStats$aRich),
-				aRich_max = max(tempStats$aRich),
+				aRich_sd = sd(tempStats$aRich),
 				nSNP_mu = mean(tempStats$nSNP),
 				nSNP_min = min(tempStats$nSNP),
 				nSNP_max = max(tempStats$nSNP),
