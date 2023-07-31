@@ -435,6 +435,49 @@ pop <- list()
 # pull founders from simulated pop while avoiding full and half sibs
 pop[[1]] <- newPop(founderPop)
 
+
+# calculate LD panel summary statistics in founders
+hapMat <- pullSnpHaplo(pop[[1]])
+sumStatLD <- tibble()
+for(ldType in names(LDpanels)){
+	for(i in 1:length(LDpanels[[ldType]])){
+		pointLD <- LDpanels[[ldType]][[i]] # pointer to current panel to increase readability
+		tempStats <- tibble(loc = 1:nrow(pointLD),
+							aRich = NA,
+							nSNP = NA,
+							He = NA)
+		for(j in 1:nrow(pointLD)){
+			# position of SNPs in locus
+			tempPos <- as.numeric(str_split(pointLD$pos[j], ",")[[1]])
+			# names of SNPs in alphaSimR
+			tempName <- LDselect$mh[[1]] %>% filter(pos %in% tempPos) %>% pull(name)
+			tempHapMat <- hapMat[,tempName]
+			# concat to form microhap alleles
+			a <- tempHapMat[,1]
+			if(ncol(tempHapMat) > 1) for(i in 2:ncol(tempHapMat)) a <- paste0(a, tempHapMat[,i])
+			tempStats$aRich[j] <- n_distinct(a)
+			tempStats$nSNP[j] <- length(tempName)
+			tempStats$He <- 1 - sum((table(a) / length(a))^2)
+		}
+		
+		sumStatLD <- sumStatLD %>% bind_rows(
+			tibble(
+				type = ldType,
+				panel = i,
+				nLoci = nrow(pointLD),
+				aRich_mu = mean(tempStats$aRich),
+				aRich_min = min(tempStats$aRich),
+				aRich_max = max(tempStats$aRich),
+				nSNP_mu = mean(tempStats$nSNP),
+				nSNP_min = min(tempStats$nSNP),
+				nSNP_max = max(tempStats$nSNP),
+				He_mu = mean(tempStats$He)
+			)
+		)
+	}
+}
+save(sumStatLD,  file = paste0("rda/multGen_empir_MH_small_", prefix, "_", iterationNumber, ".rda"))
+
 # calculate allele freqs in base generation
 founderAlleleFreqs <- apply(pullSnpGeno(pop[[1]]), 2, function(x) sum(x) / (2 * length(x)))
 
