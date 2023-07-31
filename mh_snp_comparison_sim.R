@@ -475,7 +475,7 @@ for(ldType in names(LDpanels)){
 		)
 	}
 }
-save(sumStatLD,  file = paste0("rda/multGen_empir_MH_small_", prefix, "_", iterationNumber, ".rda"))
+save(sumStatLD,  file = paste0("rda/ldPanelSumStats_", prefix, "_", iterationNumber, ".rda"))
 
 # calculate allele freqs in base generation
 founderAlleleFreqs <- apply(pullSnpGeno(pop[[1]]), 2, function(x) sum(x) / (2 * length(x)))
