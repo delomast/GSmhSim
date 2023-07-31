@@ -451,9 +451,9 @@ for(ldType in names(LDpanels)){
 			tempPos <- as.numeric(str_split(pointLD$pos[j], ",")[[1]])
 			# names of SNPs in alphaSimR
 			tempName <- LDselect$mh[[1]] %>% filter(pos %in% tempPos) %>% pull(name)
-			tempHapMat <- hapMat[,tempName]
+			tempHapMat <- hapMat[,tempName,drop = FALSE]
 			# concat to form microhap alleles
-			a <- tempHapMat[,1,drop = FALSE]
+			a <- tempHapMat[,1]
 			if(ncol(tempHapMat) > 1) for(i in 2:ncol(tempHapMat)) a <- paste0(a, tempHapMat[,i])
 			tempStats$aRich[j] <- n_distinct(a)
 			tempStats$nSNP[j] <- length(tempName)
