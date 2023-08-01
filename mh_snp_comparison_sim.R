@@ -308,7 +308,11 @@ system2("python3", args = c("./eval_vcf.py", inputVCFpath, paste0(localTempDir, 
 snpEval <- read_tsv(paste0(localTempDir, "/", "temp", iterationNumber, "/HeSNP.txt"),
 					col_names = c("chr", "pos", "lineNum", "He", "qtl"), col_types = "cdddl")
 mhEval <- read_tsv(paste0(localTempDir, "/", "temp", iterationNumber, "/HeMH.txt"),
-				   col_names = c("chr", "pos", "He", "lineNum"), col_types = "ccdc")
+				   col_names = c("chr", "pos", "He", "lineNum", "numSNPs", "aRich"), col_types = "ccdcdd")
+
+# testing with removal of highly variable microhaplotypes
+mhEval <- mhEval %>% filter(aRich <= numSNPs + 1) %>%
+	select(-numSNPs, -aRich)
 
 # QTL
 qtl <- snpEval %>% filter(qtl) 

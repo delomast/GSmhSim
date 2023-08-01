@@ -6,7 +6,7 @@
 #   all loci biallelic
 # 
 # command line arguments in order
-# input vcf file, output prefix, window size
+# input file, output prefix, window size ,random seed, number of random SNPs for qtl
 
 # load libraries
 import sys
@@ -33,6 +33,21 @@ def calcHe(genoList):
 	
 	# returning as string b/c is immediately being written to file
 	return str(He)
+
+def numAlleles(genoList):
+	# build string representations of haplotypes
+	alleles1 = [""] * len(genoList[0])
+	alleles2 = [""] * len(genoList[0])
+	for g in genoList:
+		alleles1 = [alleles1[i] + g[i][0] for i in range(0, len(alleles1))]
+		alleles2 = [alleles2[i] + g[i][2] for i in range(0, len(alleles2))]
+	# count allele frequencies
+	af = {}
+	for a in alleles1 + alleles2:
+		af[a] = af.get(a, 0) + 1
+
+	# returning as string b/c is immediately being written to file
+	return str(len(af))
 
 #' @param genos one split VCF rows with only genotype columns
 def calcSNPHe(genos):
@@ -157,7 +172,7 @@ def Main():
 				numSnpsPerWindow[len(cur)] = numSnpsPerWindow.get(len(cur), 0) + 1
 
 				# now calculate expHet and write to output
-				outFile_mh.write("\t".join([curChr, ",".join([str(x) for x in cur])] + [calcHe(genos)] + [",".join([str(x) for x in windLines])]) + "\n")
+				outFile_mh.write("\t".join([curChr, ",".join([str(x) for x in cur])] + [calcHe(genos)] + [",".join([str(x) for x in windLines])] + [str(len(cur)), numAlleles(genos)]) + "\n")
 			
 				# advance to next window
 				if curChr == nextR[0]:
@@ -190,7 +205,7 @@ def Main():
 		# evaluate last window
 		numWindows += 1
 		numSnpsPerWindow[len(cur)] = numSnpsPerWindow.get(len(cur), 0) + 1
-		outFile_mh.write("\t".join([curChr, ",".join([str(x) for x in cur])] + [calcHe(genos)] + [",".join([str(x) for x in windLines])]) + "\n")
+		outFile_mh.write("\t".join([curChr, ",".join([str(x) for x in cur])] + [calcHe(genos)] + [",".join([str(x) for x in windLines])] + [str(len(cur)), numAlleles(genos)]) + "\n")
 		
 		# print some summary information
 		print("number of windows: ", numWindows)
