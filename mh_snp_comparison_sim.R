@@ -274,8 +274,8 @@ if(grepl("mbpLowDepth.vcf$", inputVCFpath)){
 					  		104044219,
 					  		49143029)
 	)
-	HDpanelSize <- 40000
-	num_choose_qtl <- 1000
+	HDpanelSize <- 60000
+	num_choose_qtl <- 1500
 	prefix <- "ATL"
 	# LD panel sizes to test
 	panelSizes <- seq(50, 750, 100)
