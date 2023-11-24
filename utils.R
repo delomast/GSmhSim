@@ -137,8 +137,8 @@ greedyChooseLoci <- function(num, locusEval){
 			# choose SNP
 			temp <- which.max(cands$score)
 			chosen <- cands %>% slice(temp)
-			panel <- panel %>% bind_rows(chosen)
 			numSNPs <- numSNPs + 1
+			panel <- panel %>% bind_rows(chosen %>% mutate(selOrder = numSNPs))
 			if(numSNPs == num$num[i]) break
 			
 			# first remove any windows (if microhaps) overlapping with the chosen window

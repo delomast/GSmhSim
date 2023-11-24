@@ -320,7 +320,10 @@ qtl <- snpEval %>% filter(qtl)
 HDpanel <- snpEval %>% filter(!qtl) %>% slice_sample(n = HDpanelSize)
 
 ## choose largest panel first, then choose smaller panels by
-##   selecting top scores in each chromosome
+##   selecting subsets of loci (in order of being selected) 
+##   in each chromosome
+## This is equivalent to running the algorithm multiple times for the 
+##    different panel sizes but reduces computation time
 
 # allocate number of loci for each chromosome
 # proportional to chr length
@@ -345,12 +348,12 @@ for(s in panelSizes){
 		LDpanels$mh[[length(LDpanels$mh)]] <- 
 			rbind(LDpanels$mh[[length(LDpanels$mh)]], 
 				  largestMH %>% filter(chr == dfOut$chr[i]) %>%
-				  	arrange(desc(score)) %>% slice(1:dfOut$num[i]))
+				  	arrange(selOrder) %>% slice(1:dfOut$num[i]))
 		# for each LD SNP panel, choose SNPs
 		LDpanels$snp[[length(LDpanels$snp)]] <- 
 			rbind(LDpanels$snp[[length(LDpanels$snp)]], 
 				  largestSNP %>% filter(chr == dfOut$chr[i]) %>%
-				  	arrange(desc(score)) %>% slice(1:dfOut$num[i]))
+				  	arrange(selOrder) %>% slice(1:dfOut$num[i]))
 		# for each rand SNP panel, choose SNPs
 		LDpanels$randSNP[[length(LDpanels$randSNP)]] <- 
 			rbind(LDpanels$randSNP[[length(LDpanels$randSNP)]], 
